@@ -1,4 +1,4 @@
-# frappe -- https://github.com/frappe/frappe is installed via 'bench init'
-frappe
-erpnext
-aiorun
+flask
+requests
+python-dotenv
+hl7>=0.4.1
