@@ -36,7 +36,7 @@ PIP_BIN = os.path.join(
     VENV_DIR, "Scripts" if IS_WINDOWS else "bin", "pip.exe" if IS_WINDOWS else "pip"
 )
 
-PORT = int(os.environ.get("HL7_DASHBOARD_PORT", 5050))
+PORT = int(os.environ.get("HL7_DASHBOARD_PORT", 5151))
 DASHBOARD_URL = f"http://localhost:{PORT}"
 
 
@@ -57,13 +57,15 @@ def is_port_in_use(port: int = PORT) -> bool:
 
 def create_venv() -> None:
     """Create the virtual environment if it doesn't exist."""
-    if os.path.isdir(VENV_DIR) and os.path.isfile(PYTHON_BIN):
+    if os.path.isfile(PYTHON_BIN) and os.path.isfile(PIP_BIN):
         print("[✓] Virtual environment found.")
         return
 
+    # A venv without pip is left behind when it was created before the
+    # system's venv/ensurepip support was installed — rebuild it.
     print("[…] Creating virtual environment...")
     subprocess.check_call(
-        [sys.executable, "-m", "venv", VENV_DIR],
+        [sys.executable, "-m", "venv", "--clear", VENV_DIR],
         cwd=APP_DIR,
     )
     print("[✓] Virtual environment created.")
