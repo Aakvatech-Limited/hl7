@@ -189,7 +189,8 @@ async def process_hl7_messages(app, device_id, reader, writer) -> None:
 
             writer.writemessage(hl7_message.create_ack())
             await writer.drain()
-    except asyncio.IncompleteReadError:
+    except (asyncio.IncompleteReadError, ConnectionResetError, OSError) as exc:
+        logger.info("Connection lost %s (device %s): %s", peername, device_id, exc)
         if not writer.is_closing():
             writer.close()
             await writer.wait_closed()
